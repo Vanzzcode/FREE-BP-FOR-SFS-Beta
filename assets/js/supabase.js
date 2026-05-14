@@ -6,7 +6,7 @@ const SUPABASE_URL      = 'https://mrubbgfthrxeveahvrsu.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_H-zZj7xLPNmF6NLRywYJxQ_71j5KdmQ';
 
 // Email owner — ganti dengan email kamu
-const OWNER_EMAIL = 'vanzzcode@gmail.com';
+const OWNER_USERNAME = 'vanzz';
 // Password verifikasi panel admin/owner (beda dari password login)
 const ADMIN_VERIFY_PASSWORD = 'VanzzAkses895';
 // Storage bucket name
@@ -32,6 +32,15 @@ async function loginUser(username, password) {
   const fakeEmail = username.toLowerCase().replace(/[^a-z0-9]/g, '') + '@sfs.local';
   const { data, error } = await _sb.auth.signInWithPassword({ email: fakeEmail, password });
   if (error) return { error: { message: 'Username atau password salah.' } };
+
+  // Auto set role owner jika username cocok dengan OWNER_USERNAME
+  if (data?.user && username === OWNER_USERNAME) {
+    await _sb.from('profiles')
+      .update({ role: 'owner' })
+      .eq('id', data.user.id)
+      .neq('role', 'owner'); // hanya update jika belum owner
+  }
+
   // Update session tracker
   if (data?.user) {
     await _sb.rpc('update_session', { uid: data.user.id, uname: username });
@@ -241,12 +250,52 @@ async function recordDownload(blueprintId) {
 async function toggleLike(blueprintId) {
   const user = await getCurrentUser();
   if (!user) return { error: { message: 'Harus login untuk like.' } };
-  const { data, error } = await _sb.rpc('toggle_like', { bp_id: blueprintId, uid: user.id });
-  return { data, error };
+
+  // Cek apakah sudah like
+  const { data: existing } = await _sb
+    .from('likes')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('blueprint_id', blueprintId)
+    .maybeSingle();
+
+  let liked, new_count;
+
+  if (existing) {
+    // Unlike — hapus row
+    await _sb.from('likes').delete().eq('id', existing.id);
+    const { data: bp } = await _sb
+      .from('blueprints')
+      .select('like_count')
+      .eq('id', blueprintId)
+      .single();
+    const updated = Math.max((bp?.like_count || 1) - 1, 0);
+    await _sb.from('blueprints').update({ like_count: updated }).eq('id', blueprintId);
+    new_count = updated;
+    liked = false;
+  } else {
+    // Like — insert row
+    await _sb.from('likes').insert([{ user_id: user.id, blueprint_id: blueprintId }]);
+    const { data: bp } = await _sb
+      .from('blueprints')
+      .select('like_count')
+      .eq('id', blueprintId)
+      .single();
+    const updated = (bp?.like_count || 0) + 1;
+    await _sb.from('blueprints').update({ like_count: updated }).eq('id', blueprintId);
+    new_count = updated;
+    liked = true;
+  }
+
+  return { data: { liked, count: new_count }, error: null };
 }
 
 async function getUserLikes(userId) {
-  const { data } = await _sb.from('likes').select('blueprint_id').eq('user_id', userId);
+  if (!userId) return [];
+  const { data } = await _sb
+    .from('likes')
+    .select('blueprint_id')
+    .eq('user_id', userId);
   return (data || []).map(r => r.blueprint_id);
 }
 
@@ -513,7 +562,7 @@ window.SFS = {
   registerUser, loginUser, logoutUser,
   getCurrentUser, getCurrentProfile,
   verifyAdminPassword,
-  OWNER_EMAIL,
+  OWNER_USERNAME,
   // Visitor
   trackVisitor,
   // Stats
