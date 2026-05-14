@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Panel Admin — Free BP SFS</title>
+  <link rel="stylesheet" href="../assets/css/style.css"/>
+  <link rel="stylesheet" href="../assets/css/additions.css"/>
+  <link rel="stylesheet" href="../assets/css/admin.css"/>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+
+<!-- VERIFY OVERLAY -->
+<div class="verify-overlay" id="verifyOverlay">
+  <div class="verify-box">
+    <div class="v-icon">🛡️</div>
+    <h2>VERIFIKASI ADMIN</h2>
+    <p>Masukkan Admin Password untuk mengakses panel. Password ini berbeda dari password login kamu.</p>
+    <div style="text-align:left;">
+      <label class="form-label">Admin Password</label>
+      <input type="password" class="form-input" id="adminPasswordInput" placeholder="••••••••••••"/>
+    </div>
+    <div class="verify-error" id="verifyError"></div>
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <a href="../index.html" class="btn-auth" style="flex:1;text-align:center;text-decoration:none;background:rgba(255,255,255,0.04);border:1px solid var(--border-color);color:var(--text-muted);">Batal</a>
+      <button class="btn-auth" id="btnVerifyAdmin" style="flex:1;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#ef4444;">🛡️ Masuk</button>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="header-left"><div class="header-icon">🛡️</div><span class="page-title">PANEL ADMIN</span></div>
+  <div class="header-right"><div class="hamburger" id="hamburger"><span></span><span></span><span></span></div></div>
+</header>
+
+<div id="sidebarOverlay" class="sidebar-overlay"></div>
+<nav id="sidebar" class="sidebar">
+  <div class="sidebar-header"><p>Navigation</p></div>
+  <ul class="nav-list">
+    <li><a href="../index.html"><span class="nav-icon">🏠</span> Halaman Utama</a></li>
+    <li><a href="NASA.html"><span class="nav-icon">🚀</span> NASA Rocket</a></li>
+    <li><a href="spacex.html"><span class="nav-icon">⚡</span> SpaceX Rocket</a></li>
+    <li><a href="satelit.html"><span class="nav-icon">🛰️</span> Satelit</a></li>
+    <li><a href="random.html"><span class="nav-icon">🎲</span> Random</a></li>
+    <li><a href="leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a></li>
+    <li><a href="about.html"><span class="nav-icon">ℹ️</span> About</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <ul class="nav-list nav-auth-area"></ul>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section-label">📊 Statistik</div>
+  <div class="stats-block">
+    <div class="stat-item"><div class="stat-dot"></div><div class="stat-info"><span class="stat-label">Pengunjung</span><span class="stat-value" id="statVisitors">0</span></div></div>
+    <div class="stat-item"><div class="stat-icon">🗂️</div><div class="stat-info"><span class="stat-label">Total Blueprint</span><span class="stat-value" id="statTotalBP">0</span></div></div>
+    <div class="stat-item"><div class="stat-icon">📥</div><div class="stat-info"><span class="stat-label">Total Download</span><span class="stat-value" id="statTotalDownloads">0</span></div></div>
+  </div>
+</nav>
+
+<main>
+  <div class="container panel-container" id="panelContent" style="display:none;">
+    <div class="panel-header">
+      <h1 id="panelTitle">🛡️ Panel Admin <span class="role-badge role-admin" id="panelRoleBadge">ADMIN</span></h1>
+      <p>Dashboard pengelolaan konten dan statistik global.</p>
+    </div>
+
+    <div class="panel-msg" id="adminMsg"></div>
+
+    <!-- STATS -->
+    <div class="panel-stats">
+      <div class="panel-stat-card"><div class="val" data-stat="totalUsers">0</div><div class="lbl">Total User</div></div>
+      <div class="panel-stat-card"><div class="val" data-stat="totalBP">0</div><div class="lbl">Total Blueprint</div></div>
+      <div class="panel-stat-card"><div class="val" data-stat="totalDownloads">0</div><div class="lbl">Total Download</div></div>
+      <div class="panel-stat-card"><div class="val" id="statOnlineUsers">0</div><div class="lbl">User Online</div></div>
+    </div>
+
+    <!-- PENGUMUMAN -->
+    <div class="panel-section">
+      <div class="panel-section-title">📢 PENGUMUMAN</div>
+      <div id="adminAnnouncementList" style="margin-bottom:12px;"></div>
+      <div style="display:flex;gap:8px;">
+        <input class="form-input" id="announcementInput" placeholder="Tulis pengumuman baru..." style="flex:1;"/>
+        <button class="btn-primary" onclick="postAnnouncement_admin()">📢 Post</button>
+      </div>
+    </div>
+
+    <!-- ONLINE USERS (Owner only) -->
+    <div class="panel-section" id="onlineSection" style="display:none;">
+      <div class="panel-section-title">🟢 USER ONLINE SEKARANG</div>
+      <div class="online-users-list" id="onlineUsersList"></div>
+    </div>
+
+    <!-- SEMUA BLUEPRINT -->
+    <div class="panel-section">
+      <div class="panel-section-title">
+        📋 SEMUA BLUEPRINT
+        <button class="btn-sm btn-ghost" onclick="loadAllBlueprints_admin()" style="font-size:11px;">🔄 Refresh</button>
+      </div>
+      <div class="panel-table-wrap">
+        <table class="panel-table">
+          <thead><tr><th>Nama Blueprint</th><th>Uploader</th><th>Kategori</th><th>Download</th><th>Like</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="adminBPtbody"><tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:1.5rem;">Memuat...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- OWNER: CARI USER -->
+    <div class="panel-section" id="searchUserSection" style="display:none;">
+      <div class="panel-section-title">🔍 CARI USER</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <input class="form-input" id="searchUserInput" placeholder="Username atau email..." style="flex:1;"/>
+        <button class="btn-primary" onclick="searchUser_owner()">Cari</button>
+      </div>
+      <div id="searchUserResult"></div>
+    </div>
+
+    <!-- OWNER: SEMUA USER -->
+    <div class="panel-section" id="allUsersSection" style="display:none;">
+      <div class="panel-section-title">
+        👥 SEMUA USER
+        <button class="btn-sm btn-ghost" onclick="loadAllUsers_owner()" style="font-size:11px;">🔄 Refresh</button>
+      </div>
+      <div class="panel-table-wrap">
+        <table class="panel-table">
+          <thead><tr><th>Username</th><th>Role</th><th>Warning</th><th>Status</th><th>Bergabung</th><th>Aksi</th></tr></thead>
+          <tbody id="ownerUserTbody"><tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:1.5rem;">Memuat...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ACTIVITY LOG -->
+    <div class="panel-section">
+      <div class="panel-section-title">
+        📜 LOG AKTIVITAS
+        <button class="btn-sm btn-ghost" onclick="loadActivityLogs_admin()" style="font-size:11px;">🔄 Refresh</button>
+      </div>
+      <div class="card-block" id="activityLogList" style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:0 16px;"></div>
+    </div>
+  </div>
+</main>
+
+<!-- MODAL: HAPUS BLUEPRINT -->
+<div class="modal-overlay danger" id="deleteModal">
+  <div class="modal-box danger">
+    <div class="modal-title" style="color:#ef4444;">🗑️ <span id="deleteModalLabel">Hapus Blueprint</span></div>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">Blueprint akan hilang dari publik dan gambarnya akan dihapus. Uploader akan melihat alasan ini di "Blueprint Saya".</p>
+    <label class="form-label">Alasan Penghapusan <span style="color:#ef4444;">*</span></label>
+    <textarea class="form-input" id="deleteReasonInput" rows="3" placeholder="Tulis alasan yang jelas..." style="resize:vertical;"></textarea>
+    <div class="modal-error" id="deleteModalError"></div>
+    <div class="modal-footer">
+      <button class="btn-sm btn-ghost" onclick="closeDeleteModal()">Batal</button>
+      <button class="btn-sm btn-danger" id="btnConfirmDelete">🗑️ Hapus Permanen</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: KELOLA USER (Owner) -->
+<div class="modal-overlay" id="roleModal">
+  <div class="modal-box">
+    <div class="modal-title">⚙️ <span id="roleModalTitle">Kelola User</span></div>
+    <label class="form-label" style="margin-bottom:8px;">Set Role</label>
+    <div class="role-selector">
+      <button class="role-opt-btn user" data-role="user" onclick="selectRole(this)">👤 User</button>
+      <button class="role-opt-btn moderator" data-role="moderator" onclick="selectRole(this)">🔨 Moderator</button>
+      <button class="role-opt-btn admin" data-role="admin" onclick="selectRole(this)">🛡️ Admin</button>
+    </div>
+    <div class="toggle-row" style="margin-top:12px;">
+      <span class="toggle-label">✅ Centang Biru (Akun Terverifikasi)</span>
+      <label class="toggle-switch"><input type="checkbox" id="toggleVerified"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="toggle-row">
+      <span class="toggle-label">🏷️ Tag Kreator</span>
+      <label class="toggle-switch"><input type="checkbox" id="toggleCreator"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sm btn-ghost" onclick="closeRoleModal()">Batal</button>
+      <button class="btn-sm btn-owner" onclick="saveRoleModal()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: BAN USER -->
+<div class="modal-overlay danger" id="banModal">
+  <div class="modal-box danger">
+    <div class="modal-title" style="color:#ef4444;">🚫 <span id="banModalLabel">Ban User</span></div>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">User tidak bisa login dan semua BP-nya disembunyikan dari publik.</p>
+    <label class="form-label">Alasan Ban <span style="color:#ef4444;">*</span></label>
+    <textarea class="form-input" id="banReasonInput" rows="3" placeholder="Tulis alasan..." style="resize:vertical;"></textarea>
+    <div class="modal-error" id="banModalError"></div>
+    <div class="modal-footer">
+      <button class="btn-sm btn-ghost" onclick="closeBanModal()">Batal</button>
+      <button class="btn-sm btn-danger" id="btnConfirmBan">🚫 Ban User</button>
+    </div>
+  </div>
+</div>
+
+<footer><p>Made with 🚀 for <span>Space Flight Simulator</span> community</p></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../assets/js/supabase.js"></script>
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/admin.js"></script>
+<script>
+  function selectRole(btn) {
+    document.querySelectorAll('.role-opt-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    // Cek apakah user boleh akses halaman ini
+    const profile = await window.SFS.getCurrentProfile();
+    if (!profile || (profile.role !== 'admin' && profile.role !== 'owner')) {
+      window.location.href = '../index.html';
+      return;
+    }
+
+    // Update title & badge sesuai role
+    if (profile.role === 'owner') {
+      document.getElementById('panelTitle').innerHTML = '👑 Panel Owner <span class="role-badge role-owner">OWNER</span>';
+      document.getElementById('onlineSection').style.display = 'block';
+      document.getElementById('searchUserSection').style.display = 'block';
+      document.getElementById('allUsersSection').style.display = 'block';
+    }
+
+    // Verifikasi admin password
+    await initAdminVerify(async () => {
+      document.getElementById('panelContent').style.display = 'block';
+      if (profile.role === 'owner') {
+        await initOwnerPanel();
+      } else {
+        await initAdminPanel();
+      }
+    });
+  });
+</script>
+</body>
+</html>

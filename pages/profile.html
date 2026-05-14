@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Profil — Free BP SFS</title>
+  <link rel="stylesheet" href="../assets/css/style.css"/>
+  <link rel="stylesheet" href="../assets/css/additions.css"/>
+  <style>
+    .profile-container { padding-top: calc(var(--header-height) + 2rem); padding-bottom: 3rem; max-width: 640px; margin: 0 auto; }
+    .profile-hero { background:var(--bg-card); border:1px solid var(--border-color); border-radius:16px; padding:24px; display:flex; align-items:center; gap:20px; margin-bottom:20px; }
+    .profile-avatar { width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg,var(--accent-blue),var(--accent-cyan)); display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700; flex-shrink:0; color:#fff; }
+    .profile-info h2 { font-family:'Orbitron',sans-serif; font-size:18px; margin-bottom:4px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .profile-info p { color:var(--text-muted); font-size:13px; }
+    .badge-verified { font-size:16px; }
+    .badge-creator { background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(239,68,68,0.1)); border:1px solid rgba(245,158,11,0.3); color:#f59e0b; font-family:'Orbitron',sans-serif; font-size:9px; letter-spacing:1px; padding:2px 8px; border-radius:4px; }
+    .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px; }
+    .stat-card { background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:18px; text-align:center; }
+    .stat-card .val { font-family:'Orbitron',sans-serif; font-size:24px; font-weight:700; background:linear-gradient(135deg,var(--accent-blue),var(--accent-cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:4px; }
+    .stat-card .lbl { font-size:11px; color:var(--text-muted); letter-spacing:1px; }
+    .card-block { background:var(--bg-card); border:1px solid var(--border-color); border-radius:14px; padding:20px; margin-bottom:16px; }
+    .card-title { font-family:'Orbitron',sans-serif; font-size:12px; letter-spacing:2px; color:var(--text-muted); margin-bottom:16px; padding-bottom:8px; border-bottom:1px solid var(--border-color); }
+    .warn-dots { display:flex; gap:6px; }
+    .warn-dot { width:12px; height:12px; border-radius:50%; background:var(--border-color); transition:background 0.2s; }
+    .warn-dot.active { background:#f59e0b; box-shadow:0 0 6px rgba(245,158,11,0.5); }
+    .warn-history-item { padding:10px; background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.15); border-radius:8px; margin-bottom:8px; }
+    .warn-history-item:last-child { margin-bottom:0; }
+    .form-msg { padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:12px; display:none; }
+    .form-msg.success { background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); color:#10b981; display:block; }
+    .form-msg.error { background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); color:#ef4444; display:block; }
+    .banned-notice { background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); border-radius:12px; padding:18px; margin-bottom:20px; }
+    .banned-notice h3 { color:#ef4444; font-family:'Orbitron',sans-serif; font-size:13px; margin-bottom:6px; }
+    .banned-notice p { color:#f87171; font-size:13px; }
+  </style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<header>
+  <div class="header-left"><div class="header-icon">👤</div><span class="page-title">PROFIL SAYA</span></div>
+  <div class="header-right"><div class="hamburger" id="hamburger"><span></span><span></span><span></span></div></div>
+</header>
+<div id="sidebarOverlay" class="sidebar-overlay"></div>
+<nav id="sidebar" class="sidebar">
+  <div class="sidebar-header"><p>Navigation</p></div>
+  <ul class="nav-list">
+    <li><a href="../index.html"><span class="nav-icon">🏠</span> Halaman Utama</a></li>
+    <li><a href="NASA.html"><span class="nav-icon">🚀</span> NASA Rocket</a></li>
+    <li><a href="spacex.html"><span class="nav-icon">⚡</span> SpaceX Rocket</a></li>
+    <li><a href="satelit.html"><span class="nav-icon">🛰️</span> Satelit</a></li>
+    <li><a href="random.html"><span class="nav-icon">🎲</span> Random</a></li>
+    <li><a href="leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a></li>
+    <li><a href="about.html"><span class="nav-icon">ℹ️</span> About</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <ul class="nav-list nav-auth-area"></ul>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section-label">📊 Statistik</div>
+  <div class="stats-block">
+    <div class="stat-item"><div class="stat-dot"></div><div class="stat-info"><span class="stat-label">Pengunjung</span><span class="stat-value" id="statVisitors">0</span></div></div>
+    <div class="stat-item"><div class="stat-icon">🗂️</div><div class="stat-info"><span class="stat-label">Total Blueprint</span><span class="stat-value" id="statTotalBP">0</span></div></div>
+    <div class="stat-item"><div class="stat-icon">📥</div><div class="stat-info"><span class="stat-label">Total Download</span><span class="stat-value" id="statTotalDownloads">0</span></div></div>
+  </div>
+</nav>
+
+<main>
+  <div class="container profile-container" id="profileContent">
+    <div style="text-align:center;padding:4rem;color:var(--text-muted);">⏳ Memuat profil...</div>
+  </div>
+</main>
+
+<footer><p>Made with 🚀 for <span>Space Flight Simulator</span> community</p></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../assets/js/supabase.js"></script>
+<script src="../assets/js/main.js"></script>
+<script>
+  async function loadProfile() {
+    const user = await window.SFS.getCurrentUser();
+    if (!user) { window.location.href = 'login.html'; return; }
+
+    const profile = await window.SFS.getCurrentProfile();
+    if (!profile) { window.location.href = 'login.html'; return; }
+
+    // Load personal stats
+    const { data: bpData } = await window.SFS.getBlueprintsByUser(user.id);
+    const activeBPs = (bpData || []).filter(b => !b.is_deleted);
+    const totalDownloads = activeBPs.reduce((s,b) => s+(b.download_count||0), 0);
+    const totalLikes = activeBPs.reduce((s,b) => s+(b.like_count||0), 0);
+
+    // Load warnings
+    const { data: warnings } = await window.SFS._sb ? { data: [] } : { data: [] };
+
+    const badgeVerified = profile.is_verified ? `<span class="badge-verified" title="Akun Terverifikasi">✅</span>` : '';
+    const badgeCreator = profile.is_creator ? `<span class="badge-creator">🏷️ KREATOR</span>` : '';
+    const roleColors = { owner:'#f59e0b', admin:'#ef4444', moderator:'#a78bfa', user:'var(--accent-cyan)' };
+    const roleColor = roleColors[profile.role] || 'var(--accent-cyan)';
+
+    const content = document.getElementById('profileContent');
+    content.innerHTML = `
+      ${profile.is_banned ? `
+        <div class="banned-notice">
+          <h3>🚫 AKUN DIBANNED</h3>
+          <p>Alasan: ${profile.ban_reason || 'Tidak ada alasan diberikan.'}</p>
+        </div>` : ''}
+
+      <div class="profile-hero fade-in">
+        <div class="profile-avatar">${profile.username[0].toUpperCase()}</div>
+        <div class="profile-info">
+          <h2>${profile.username} ${badgeVerified} ${badgeCreator}</h2>
+          <p style="margin-bottom:4px;">
+            <span style="color:${roleColor};font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:1px;">${profile.role.toUpperCase()}</span>
+          </p>
+          <p>Bergabung sejak ${new Date(profile.created_at).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}</p>
+        </div>
+      </div>
+
+      <div class="stats-grid fade-in">
+        <div class="stat-card"><div class="val">${activeBPs.length}</div><div class="lbl">Blueprint</div></div>
+        <div class="stat-card"><div class="val">${totalDownloads.toLocaleString()}</div><div class="lbl">Total Download</div></div>
+        <div class="stat-card"><div class="val">${totalLikes.toLocaleString()}</div><div class="lbl">Total Like</div></div>
+      </div>
+
+      <!-- Edit Username -->
+      <div class="card-block fade-in">
+        <div class="card-title">✏️ EDIT PROFIL</div>
+        <div class="form-msg" id="editMsg"></div>
+        <div style="margin-bottom:14px;">
+          <label class="form-label">Username Baru</label>
+          <input type="text" class="form-input" id="newUsernameInput" value="${profile.username}" maxlength="30"/>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:5px;">Minimal 3 karakter. Hanya huruf, angka, dan underscore.</div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;">
+          <button class="btn-primary" onclick="saveUsername()">💾 Simpan Username</button>
+        </div>
+      </div>
+
+      <!-- Warning Status -->
+      <div class="card-block fade-in">
+        <div class="card-title">⚠️ STATUS PERINGATAN</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div>
+            <div style="font-size:13px;margin-bottom:4px;">${profile.warning_count}/3 Peringatan</div>
+            <div style="font-size:12px;color:var(--text-muted);">3 peringatan = ban otomatis</div>
+          </div>
+          <div class="warn-dots">
+            ${[0,1,2].map(i => `<div class="warn-dot ${i < profile.warning_count ? 'active' : ''}"></div>`).join('')}
+          </div>
+        </div>
+        ${profile.warning_count > 0 ? `
+          <div class="warn-history-item">
+            <div style="font-size:12px;color:#f59e0b;margin-bottom:3px;">⚠️ Kamu memiliki ${profile.warning_count} peringatan aktif.</div>
+            <div style="font-size:12px;color:var(--text-muted);">Jaga perilaku agar tidak mendapat peringatan lebih lanjut.</div>
+          </div>` : `
+          <div style="font-size:13px;color:#10b981;">✅ Tidak ada peringatan. Terus jaga perilaku baik!</div>`}
+      </div>
+    `;
+  }
+
+  async function saveUsername() {
+    const newUsername = document.getElementById('newUsernameInput').value.trim();
+    const msgEl = document.getElementById('editMsg');
+    if (!newUsername || newUsername.length < 3) { msgEl.textContent = 'Username minimal 3 karakter.'; msgEl.className = 'form-msg error'; return; }
+    if (!/^[a-zA-Z0-9_]+$/.test(newUsername)) { msgEl.textContent = 'Username hanya boleh huruf, angka, dan underscore.'; msgEl.className = 'form-msg error'; return; }
+
+    const user = await window.SFS.getCurrentUser();
+    // Cek duplikat
+    const { data: existing } = await window.SFS.supabase?.from('profiles').select('id').eq('username', newUsername).maybeSingle() || { data: null };
+    if (existing && existing.id !== user.id) { msgEl.textContent = 'Username sudah dipakai.'; msgEl.className = 'form-msg error'; return; }
+
+    const { error } = await window.SFS.supabase?.from('profiles').update({ username: newUsername }).eq('id', user.id) || { error: null };
+    if (error) { msgEl.textContent = 'Gagal update: ' + error.message; msgEl.className = 'form-msg error'; }
+    else { msgEl.textContent = '✅ Username berhasil diubah!'; msgEl.className = 'form-msg success'; setTimeout(() => location.reload(), 1500); }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => loadProfile());
+</script>
+</body>
+</html>

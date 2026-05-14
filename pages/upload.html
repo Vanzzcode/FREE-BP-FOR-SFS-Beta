@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upload Blueprint — Free BP SFS</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="../assets/css/additions.css" />
+  <style>
+    .upload-container { padding-top:calc(var(--header-height) + 2rem); padding-bottom:3rem; min-height:100vh; }
+    .upload-box { background:var(--bg-card); border:1px solid var(--border-color); border-radius:16px; padding:2.5rem 2rem; max-width:560px; margin:0 auto; box-shadow:0 0 40px rgba(0,212,255,0.07); }
+    .upload-title { font-family:'Orbitron',sans-serif; color:var(--accent-cyan); font-size:18px; letter-spacing:2px; margin-bottom:0.4rem; }
+    .upload-subtitle { color:var(--text-muted); font-size:13px; margin-bottom:2rem; }
+    .img-upload-area { border:2px dashed var(--border-color); border-radius:10px; padding:1.5rem; text-align:center; cursor:pointer; transition:border-color 0.2s,background 0.2s; position:relative; }
+    .img-upload-area:hover,.img-upload-area.dragover { border-color:var(--accent-cyan); background:rgba(0,212,255,0.04); }
+    .img-upload-area input[type="file"] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; padding:0; border:none; background:none; }
+    .img-upload-icon { font-size:2rem; margin-bottom:0.5rem; }
+    .img-upload-text { color:var(--text-muted); font-size:13px; }
+    .img-upload-text b { color:var(--accent-cyan); }
+    .img-preview { width:100%; max-height:200px; object-fit:cover; border-radius:8px; margin-top:1rem; display:none; }
+    .upload-msg { padding:0.8rem 1rem; border-radius:8px; font-size:14px; margin-bottom:1rem; display:none; }
+    .upload-msg.error { background:rgba(255,80,80,0.12); border:1px solid rgba(255,80,80,0.3); color:#ff8080; display:block; }
+    .upload-msg.success { background:rgba(0,255,150,0.1); border:1px solid rgba(0,255,150,0.3); color:#00ffaa; display:block; }
+    .login-gate { text-align:center; padding:2rem 0; }
+    .login-gate p { color:var(--text-muted); margin-bottom:1rem; font-size:15px; }
+    .limit-info { background:rgba(0,180,255,0.05); border:1px solid rgba(0,180,255,0.15); border-radius:8px; padding:10px 14px; font-size:12px; color:var(--text-muted); margin-bottom:16px; }
+  </style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<header>
+  <div class="header-left"><div class="header-icon">⬆️</div><span class="page-title">UPLOAD BLUEPRINT</span></div>
+  <div class="header-right"><div class="hamburger" id="hamburger"><span></span><span></span><span></span></div></div>
+</header>
+<div id="sidebarOverlay" class="sidebar-overlay"></div>
+<nav id="sidebar" class="sidebar">
+  <div class="sidebar-header"><p>Navigation</p></div>
+  <ul class="nav-list">
+    <li><a href="../index.html"><span class="nav-icon">🏠</span> Halaman Utama</a></li>
+    <li><a href="NASA.html"><span class="nav-icon">🚀</span> NASA Rocket</a></li>
+    <li><a href="spacex.html"><span class="nav-icon">⚡</span> SpaceX Rocket</a></li>
+    <li><a href="satelit.html"><span class="nav-icon">🛰️</span> Satelit</a></li>
+    <li><a href="random.html"><span class="nav-icon">🎲</span> Random</a></li>
+    <li><a href="leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a></li>
+    <li><a href="about.html"><span class="nav-icon">ℹ️</span> About</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <ul class="nav-list nav-auth-area"></ul>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section-label">📊 Statistik</div>
+  <div class="stats-block">
+    <div class="stat-item"><div class="stat-dot"></div><div class="stat-info"><span class="stat-label">Pengunjung Unik</span><span class="stat-value" id="statVisitors">0</span></div></div>
+    <div class="stat-item"><div class="stat-icon">🗂️</div><div class="stat-info"><span class="stat-label">Total Blueprint</span><span class="stat-value" id="statTotalBP">0</span></div></div>
+    <div class="stat-item"><div class="stat-icon">📥</div><div class="stat-info"><span class="stat-label">Total Download</span><span class="stat-value" id="statTotalDownloads">0</span></div></div>
+  </div>
+</nav>
+<main>
+  <div class="container upload-container">
+    <div class="upload-box fade-in">
+      <div class="upload-title">⬆️ UPLOAD BLUEPRINT</div>
+      <div class="upload-subtitle">Bagikan blueprint SFS kamu ke komunitas!</div>
+
+      <div id="loginGate" class="login-gate" style="display:none;">
+        <p>Kamu harus login dulu untuk upload blueprint.</p>
+        <a href="login.html" class="btn-download" style="display:inline-block;text-decoration:none;width:auto;padding:0.75rem 2rem;">🔑 Login Sekarang</a>
+      </div>
+
+      <div id="uploadForm">
+        <div class="limit-info">ℹ️ Batas upload: <strong>5 blueprint per hari</strong>. Gambar maks 5MB (JPG/PNG/WEBP).</div>
+        <div class="upload-msg" id="uploadMsg"></div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label">Nama Blueprint <span style="color:#ff8080;">*</span></label>
+          <input type="text" class="form-input" id="bpName" placeholder="cth: Saturn V Replica" maxlength="80" />
+        </div>
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label">Kategori <span style="color:#ff8080;">*</span></label>
+          <select class="form-input" id="bpCategory">
+            <option value="">-- Pilih Kategori --</option>
+            <option value="nasa">🚀 NASA Rocket</option>
+            <option value="spacex">⚡ SpaceX Rocket</option>
+            <option value="satelit">🛰️ Satelit</option>
+            <option value="random">🎲 Random / Lainnya</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label">Nama Pembuat <span style="color:#ff8080;">*</span></label>
+          <input type="text" class="form-input" id="bpAuthor" placeholder="cth: Vanzzcode" maxlength="50" />
+        </div>
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label">Deskripsi Blueprint</label>
+          <textarea class="form-input" id="bpDesc" placeholder="Ceritakan sedikit tentang blueprint ini..." maxlength="300" style="resize:vertical;min-height:80px;"></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label">Foto Blueprint <span style="color:var(--text-muted);font-size:10px;">(maks. 5MB · JPG/PNG/WEBP)</span></label>
+          <div class="img-upload-area" id="imgUploadArea">
+            <input type="file" id="bpImage" accept="image/jpeg,image/png,image/webp" />
+            <div class="img-upload-icon">🖼️</div>
+            <div class="img-upload-text">Klik atau <b>drag & drop</b> foto di sini</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Format: JPG, PNG, WEBP · Maks 5MB</div>
+          </div>
+          <img id="imgPreview" class="img-preview" alt="Preview" />
+          <div id="imgError" style="color:#ff8080;font-size:12px;margin-top:4px;display:none;"></div>
+        </div>
+        <div class="form-group" style="margin-bottom:20px;">
+          <label class="form-label">Link Blueprint SFS <span style="color:#ff8080;">*</span></label>
+          <input type="url" class="form-input" id="bpLink" placeholder="https://sharing.spaceflightsimulator.app/rocket/..." />
+        </div>
+        <button class="btn-primary" id="btnUpload" style="width:100%;padding:1rem;font-size:14px;letter-spacing:2px;">🚀 UPLOAD BLUEPRINT</button>
+      </div>
+    </div>
+  </div>
+</main>
+<footer><p>Made with 🚀 for <span>Space Flight Simulator</span> community</p></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../assets/js/supabase.js"></script>
+<script src="../assets/js/main.js"></script>
+<script>
+  const MAX_SIZE = 5 * 1024 * 1024;
+  let imageFile = null;
+
+  document.getElementById('bpImage').addEventListener('change', function() {
+    const file = this.files[0];
+    const errEl = document.getElementById('imgError');
+    const preview = document.getElementById('imgPreview');
+    imageFile = null; preview.style.display = 'none'; errEl.style.display = 'none';
+    if (!file) return;
+    if (file.size > MAX_SIZE) {
+      errEl.textContent = `❌ Ukuran file ${(file.size/1024/1024).toFixed(1)}MB melebihi batas 5MB.`;
+      errEl.style.display = 'block'; this.value = ''; return;
+    }
+    imageFile = file;
+    const reader = new FileReader();
+    reader.onload = (e) => { preview.src = e.target.result; preview.style.display = 'block'; };
+    reader.readAsDataURL(file);
+  });
+
+  const area = document.getElementById('imgUploadArea');
+  area.addEventListener('dragover', e => { e.preventDefault(); area.classList.add('dragover'); });
+  area.addEventListener('dragleave', () => area.classList.remove('dragover'));
+  area.addEventListener('drop', () => area.classList.remove('dragover'));
+
+  function showMsg(msg, type) {
+    const el = document.getElementById('uploadMsg');
+    el.textContent = msg; el.className = `upload-msg ${type}`;
+    el.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+
+  document.getElementById('btnUpload').addEventListener('click', async () => {
+    const name     = document.getElementById('bpName').value.trim();
+    const category = document.getElementById('bpCategory').value;
+    const author   = document.getElementById('bpAuthor').value.trim();
+    const desc     = document.getElementById('bpDesc').value.trim();
+    const link     = document.getElementById('bpLink').value.trim();
+    const btn      = document.getElementById('btnUpload');
+
+    if (!name)     { showMsg('❌ Nama blueprint wajib diisi.', 'error'); return; }
+    if (!category) { showMsg('❌ Pilih kategori blueprint.', 'error'); return; }
+    if (!author)   { showMsg('❌ Nama pembuat wajib diisi.', 'error'); return; }
+    if (!link)     { showMsg('❌ Link blueprint wajib diisi.', 'error'); return; }
+    if (!link.startsWith('http')) { showMsg('❌ Link harus dimulai dengan https://', 'error'); return; }
+
+    btn.disabled = true; btn.textContent = '🚀 Mengupload...';
+    const { error } = await window.SFS.uploadBlueprint({
+      name, description: desc, authorName: author,
+      category, imageFile, imageBase64: null, link
+    });
+
+    if (error) {
+      showMsg('❌ ' + (error.message || 'Upload gagal, coba lagi.'), 'error');
+      btn.disabled = false; btn.textContent = '🚀 UPLOAD BLUEPRINT';
+    } else {
+      showMsg('✅ Blueprint berhasil diupload! Akan muncul di halaman kategori.', 'success');
+      ['bpName','bpAuthor','bpDesc','bpLink'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('bpCategory').value = '';
+      document.getElementById('bpImage').value = '';
+      document.getElementById('imgPreview').style.display = 'none';
+      imageFile = null;
+      btn.disabled = false; btn.textContent = '🚀 UPLOAD BLUEPRINT';
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const user = await window.SFS.getCurrentUser();
+    if (!user) {
+      document.getElementById('uploadForm').style.display = 'none';
+      document.getElementById('loginGate').style.display = 'block';
+    } else {
+      const profile = await window.SFS.getCurrentProfile();
+      if (profile?.username) document.getElementById('bpAuthor').value = profile.username;
+    }
+  });
+</script>
+</body>
+</html>

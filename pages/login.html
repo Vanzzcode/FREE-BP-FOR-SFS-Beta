@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login / Register — Free BP SFS</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="../assets/css/additions.css" />
+  <style>
+    .auth-container {
+      min-height: calc(100vh - var(--header-height));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      padding-top: calc(var(--header-height) + 2rem);
+    }
+    .auth-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 0 40px rgba(0,212,255,0.07);
+    }
+    .auth-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 2rem;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 0.75rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .auth-tab.active {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      color: #fff;
+    }
+    .auth-form { display: none; flex-direction: column; gap: 1.2rem; }
+    .auth-form.active { display: flex; }
+    .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+    .form-group label {
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      font-family: 'Orbitron', sans-serif;
+      text-transform: uppercase;
+    }
+    .form-group input {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      color: var(--text-primary);
+      font-family: 'Exo 2', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus { border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(0,212,255,0.12); }
+    .form-group input::placeholder { color: var(--text-muted); }
+    .btn-auth {
+      padding: 0.9rem;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn-auth:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-auth:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .auth-msg {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+      margin-top: 0.5rem;
+    }
+    .auth-msg.error { background: rgba(255,80,80,0.12); border: 1px solid rgba(255,80,80,0.3); color: #ff8080; display: block; }
+    .auth-msg.success { background: rgba(0,255,150,0.1); border: 1px solid rgba(0,255,150,0.3); color: #00ffaa; display: block; }
+    .auth-hint { text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 0.75rem; }
+    .auth-title { font-family: 'Orbitron', sans-serif; color: var(--accent-cyan); font-size: 20px; text-align: center; margin-bottom: 1.75rem; letter-spacing: 2px; }
+    .auth-icon { font-size: 2.5rem; text-align: center; margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+
+<header>
+  <div class="header-left">
+    <div class="header-icon">🔑</div>
+    <span class="page-title">LOGIN / REGISTER</span>
+  </div>
+  <div class="header-right">
+    <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  </div>
+</header>
+
+<div id="sidebarOverlay" class="sidebar-overlay"></div>
+<nav id="sidebar" class="sidebar">
+  <div class="sidebar-header"><p>Navigation</p></div>
+  <ul class="nav-list">
+    <li><a href="../index.html"><span class="nav-icon">🏠</span> Halaman Utama</a></li>
+    <li><a href="NASA.html"><span class="nav-icon">🚀</span> NASA Rocket</a></li>
+    <li><a href="spacex.html"><span class="nav-icon">⚡</span> SpaceX Rocket</a></li>
+    <li><a href="satelit.html"><span class="nav-icon">🛰️</span> Satelit</a></li>
+    <li><a href="random.html"><span class="nav-icon">🎲</span> Random</a></li>
+    <li><a href="about.html"><span class="nav-icon">ℹ️</span> About</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <ul class="nav-list nav-auth-area"></ul>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section-label">📊 Statistik</div>
+  <div class="stats-block">
+    <div class="stat-item"><div class="stat-dot"></div><div class="stat-info"><span class="stat-label">Pengunjung Unik</span><span class="stat-value" id="statVisitors">0</span></div></div>
+    <div class="stat-item"><div class="stat-icon">🗂️</div><div class="stat-info"><span class="stat-label">Total Blueprint</span><span class="stat-value" id="statTotalBP">0</span></div></div>
+    <div class="stat-item"><div class="stat-icon">📥</div><div class="stat-info"><span class="stat-label">Total Download</span><span class="stat-value" id="statTotalDownloads">0</span></div></div>
+  </div>
+</nav>
+
+<main class="auth-container">
+  <div class="auth-box fade-in">
+    <div class="auth-icon">🚀</div>
+    <div class="auth-title">FREE BP SFS</div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin">LOGIN</button>
+      <button class="auth-tab" id="tabRegister">REGISTER</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div class="auth-form active" id="formLogin">
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="loginUsername" placeholder="UsernameKamu" autocomplete="username" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+      <div class="auth-msg" id="loginMsg"></div>
+      <button class="btn-auth" id="btnLogin">🔑 MASUK</button>
+      <p class="auth-hint">Belum punya akun? Klik <b>REGISTER</b> di atas.</p>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div class="auth-form" id="formRegister">
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="regUsername" placeholder="UsernameKamu" autocomplete="username" maxlength="30" />
+      </div>
+      <div class="form-group">
+        <label>Password <span style="color:var(--text-muted);font-size:11px;">(min. 6 karakter)</span></label>
+        <input type="password" id="regPass" placeholder="••••••••" autocomplete="new-password" minlength="6" />
+      </div>
+      <div class="form-group">
+        <label>Konfirmasi Password</label>
+        <input type="password" id="regPassConfirm" placeholder="••••••••" autocomplete="new-password" />
+      </div>
+      <div class="auth-msg" id="registerMsg"></div>
+      <button class="btn-auth" id="btnRegister">🚀 DAFTAR SEKARANG</button>
+      <p class="auth-hint">Sudah punya akun? Klik <b>LOGIN</b> di atas.</p>
+    </div>
+  </div>
+</main>
+
+<footer><p>Made with 🚀 for <span>Space Flight Simulator</span> community</p></footer>
+
+<!-- Script dimuat SATU KALI saja, di sini -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../assets/js/supabase.js"></script>
+<script src="../assets/js/main.js"></script>
+<script>
+  // Tab switching
+  document.getElementById('tabLogin').addEventListener('click', () => {
+    document.getElementById('tabLogin').classList.add('active');
+    document.getElementById('tabRegister').classList.remove('active');
+    document.getElementById('formLogin').classList.add('active');
+    document.getElementById('formRegister').classList.remove('active');
+  });
+  document.getElementById('tabRegister').addEventListener('click', () => {
+    document.getElementById('tabRegister').classList.add('active');
+    document.getElementById('tabLogin').classList.remove('active');
+    document.getElementById('formRegister').classList.add('active');
+    document.getElementById('formLogin').classList.remove('active');
+  });
+
+  function showMsg(id, msg, type) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.className = `auth-msg ${type}`;
+  }
+
+  // LOGIN — pakai username
+  document.getElementById('btnLogin').addEventListener('click', async () => {
+    const username = document.getElementById('loginUsername').value.trim();
+    const pass     = document.getElementById('loginPass').value;
+    const btn      = document.getElementById('btnLogin');
+    if (!username || !pass) { showMsg('loginMsg', 'Username dan password wajib diisi.', 'error'); return; }
+    btn.disabled = true; btn.textContent = 'Memproses...';
+    const { error } = await window.SFS.loginUser(username, pass);
+    if (error) {
+      showMsg('loginMsg', error.message, 'error');
+      btn.disabled = false; btn.textContent = '🔑 MASUK';
+    } else {
+      showMsg('loginMsg', 'Login berhasil! Mengalihkan...', 'success');
+      setTimeout(() => window.location.href = '../index.html', 1200);
+    }
+  });
+
+  // REGISTER — pakai username
+  document.getElementById('btnRegister').addEventListener('click', async () => {
+    const username = document.getElementById('regUsername').value.trim();
+    const pass     = document.getElementById('regPass').value;
+    const confirm  = document.getElementById('regPassConfirm').value;
+    const btn      = document.getElementById('btnRegister');
+    if (!username || !pass || !confirm) { showMsg('registerMsg', 'Semua field wajib diisi.', 'error'); return; }
+    if (username.length < 3)  { showMsg('registerMsg', 'Username minimal 3 karakter.', 'error'); return; }
+    if (pass.length < 6)      { showMsg('registerMsg', 'Password minimal 6 karakter.', 'error'); return; }
+    if (pass !== confirm)     { showMsg('registerMsg', 'Password dan konfirmasi tidak cocok.', 'error'); return; }
+    btn.disabled = true; btn.textContent = 'Mendaftarkan...';
+    const { error } = await window.SFS.registerUser(username, pass);
+    if (error) {
+      showMsg('registerMsg', error.message, 'error');
+      btn.disabled = false; btn.textContent = '🚀 DAFTAR SEKARANG';
+    } else {
+      showMsg('registerMsg', '✅ Registrasi berhasil! Silakan login sekarang.', 'success');
+      btn.disabled = false; btn.textContent = '🚀 DAFTAR SEKARANG';
+      // Pindah ke tab login
+      setTimeout(() => document.getElementById('tabLogin').click(), 1500);
+    }
+  });
+
+  // Enter key support
+  ['loginUsername', 'loginPass'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('btnLogin').click(); });
+  });
+  ['regUsername', 'regPass', 'regPassConfirm'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('btnRegister').click(); });
+  });
+
+  // Redirect jika sudah login
+  (async () => {
+    const user = await window.SFS.getCurrentUser();
+    if (user) window.location.href = '../index.html';
+  })();
+</script>
+</body>
+</html>

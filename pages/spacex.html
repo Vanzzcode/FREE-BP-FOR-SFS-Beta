@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpaceX Rocket — Free BP SFS</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="../assets/css/additions.css" />
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<header>
+  <div class="header-left"><div class="header-icon">⚡</div><span class="page-title">SPACEX ROCKET</span></div>
+  <div class="header-right"><div class="hamburger" id="hamburger"><span></span><span></span><span></span></div></div>
+</header>
+<div id="sidebarOverlay" class="sidebar-overlay"></div>
+<nav id="sidebar" class="sidebar">
+  <div class="sidebar-header"><p>Navigation</p></div>
+  <ul class="nav-list">
+    <li><a href="../index.html"><span class="nav-icon">🏠</span> Halaman Utama</a></li>
+    <li><a href="NASA.html"><span class="nav-icon">🚀</span> NASA Rocket</a></li>
+    <li><a href="spacex.html"><span class="nav-icon">⚡</span> SpaceX Rocket</a></li>
+    <li><a href="satelit.html"><span class="nav-icon">🛰️</span> Satelit</a></li>
+    <li><a href="random.html"><span class="nav-icon">🎲</span> Random</a></li>
+    <li><a href="leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a></li>
+    <li><a href="about.html"><span class="nav-icon">ℹ️</span> About</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <ul class="nav-list nav-auth-area"></ul>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section-label">📊 Statistik</div>
+  <div class="stats-block">
+    <div class="stat-item"><div class="stat-dot"></div><div class="stat-info"><span class="stat-label">Pengunjung Unik</span><span class="stat-value" id="statVisitors">0</span></div></div>
+    <div class="stat-item"><div class="stat-icon">🗂️</div><div class="stat-info"><span class="stat-label">Total Blueprint</span><span class="stat-value" id="statTotalBP">0</span></div></div>
+    <div class="stat-item"><div class="stat-icon">📥</div><div class="stat-info"><span class="stat-label">Total Download</span><span class="stat-value" id="statTotalDownloads">0</span></div></div>
+  </div>
+</nav>
+<main>
+  <div class="container">
+    <div id="announcementBanner" style="margin-bottom:16px;"></div>
+    <div class="page-hero fade-in">
+      <h2>⚡ SpaceX Rocket</h2>
+      <p>Falcon 9, Starship, Dragon, dan roket SpaceX lainnya.</p>
+    </div>
+    <!-- SEARCH & FILTER -->
+    <div class="search-bar fade-in">
+      <input class="search-input" id="searchInput" placeholder="🔍 Cari blueprint..." />
+      <select class="search-select" id="sortSelect">
+        <option value="created_at">🕐 Terbaru</option>
+        <option value="like_count">❤️ Terpopuler</option>
+        <option value="download_count">📥 Terbanyak Download</option>
+      </select>
+    </div>
+    <div class="bp-count fade-in" id="bpCount"></div>
+    <div class="bp-grid fade-in-2"></div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+</main>
+<footer><p>Made with 🚀 for <span>Space Flight Simulator</span> community</p></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../assets/js/supabase.js"></script>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

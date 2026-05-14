@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — Free BP SFS</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="../assets/css/additions.css" />
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<header>
+  <div class="header-left"><div class="header-icon">ℹ️</div><span class="page-title">About</span></div>
+  <div class="header-right"><div class="hamburger" id="hamburger"><span></span><span></span><span></span></div></div>
+</header>
+<div id="sidebarOverlay" class="sidebar-overlay"></div>
+<nav id="sidebar" class="sidebar">
+  <div class="sidebar-header"><p>Navigation</p></div>
+  <ul class="nav-list">
+    <li><a href="../index.html"><span class="nav-icon">🏠</span> Halaman Utama</a></li>
+    <li><a href="NASA.html"><span class="nav-icon">🚀</span> NASA Rocket</a></li>
+    <li><a href="spacex.html"><span class="nav-icon">⚡</span> SpaceX Rocket</a></li>
+    <li><a href="satelit.html"><span class="nav-icon">🛰️</span> Satelit</a></li>
+    <li><a href="random.html"><span class="nav-icon">🎲</span> Random</a></li>
+    <li><a href="leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a></li>
+    <li><a href="about.html"><span class="nav-icon">ℹ️</span> About</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <ul class="nav-list nav-auth-area"></ul>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section-label">📊 Statistik</div>
+  <div class="stats-block">
+    <div class="stat-item"><div class="stat-dot"></div><div class="stat-info"><span class="stat-label">Pengunjung Unik</span><span class="stat-value" id="statVisitors">0</span></div></div>
+    <div class="stat-item"><div class="stat-icon">🗂️</div><div class="stat-info"><span class="stat-label">Total Blueprint</span><span class="stat-value" id="statTotalBP">0</span></div></div>
+    <div class="stat-item"><div class="stat-icon">📥</div><div class="stat-info"><span class="stat-label">Total Download</span><span class="stat-value" id="statTotalDownloads">0</span></div></div>
+  </div>
+</nav>
+<main>
+  <div class="container">
+    <div id="announcementBanner" style="margin-bottom:16px;"></div>
+    <div class="about-hero fade-in">
+      <h2>ℹ️ About This Website</h2>
+      <p>Website koleksi blueprint gratis untuk komunitas Space Flight Simulator. Semua blueprint dikurasi dari berbagai kontributor komunitas.</p>
+    </div>
+
+    <div class="about-grid fade-in-2">
+      <div class="about-card">
+        <div class="about-card-icon">🚀</div>
+        <h3>Versi Website</h3>
+        <div class="about-card-value">v2.3.0</div>
+        <p>Major update dengan sistem backend Supabase, upload komunitas, panel admin/moderator, komentar, like, dan banyak lagi.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon">📅</div>
+        <h3>Terakhir Diupdate</h3>
+        <div class="about-card-value">Mei 2026</div>
+        <p>Update terbesar sejak rilis pertama. Migrasi dari localStorage ke Supabase backend.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon">🎮</div>
+        <h3>Game</h3>
+        <div class="about-card-value">SFS</div>
+        <p>Space Flight Simulator — game simulasi roket mobile yang populer di seluruh dunia.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon">🌐</div>
+        <h3>Platform</h3>
+        <div class="about-card-value">Web App</div>
+        <p>HTML, CSS, JavaScript + Supabase backend. Ringan dan cepat di semua perangkat.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon">💾</div>
+        <h3>Backend</h3>
+        <div class="about-card-value">Supabase</div>
+        <p>Statistik, blueprint, komentar, dan user tersimpan di database Supabase yang aman dan real-time.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon">👥</div>
+        <h3>Komunitas</h3>
+        <div class="about-card-value">Terbuka</div>
+        <p>Siapapun bisa register dan upload blueprint mereka sendiri ke website ini.</p>
+      </div>
+    </div>
+
+    <!-- CHANGELOG -->
+    <div class="about-changelog fade-in-3">
+      <h3>📋 Changelog</h3>
+
+      <div class="changelog-item">
+        <div class="changelog-ver" style="color:#f59e0b;">v2.3.0</div>
+        <div class="changelog-desc">
+          <strong>Major Backend Upgrade — Supabase</strong>
+          Migrasi penuh ke Supabase. Fitur baru: upload blueprint oleh komunitas, sistem login/register (username+password), panel admin dengan verifikasi password, panel moderator, panel owner dengan manajemen role, komentar, like, search & filter & sort, pagination, leaderboard, halaman detail blueprint, profil user, sistem laporan, peringatan (3x = auto ban), ban/unban user, pengumuman admin, log aktivitas, Supabase Storage untuk gambar baru (hybrid dengan base64 lama), centang biru (verified), tag Kreator.
+        </div>
+      </div>
+
+      <div class="changelog-item">
+        <div class="changelog-ver">v1.3.0</div>
+        <div class="changelog-desc">
+          <strong>Penghapusan Halaman Apollo</strong>
+          Halaman Apollo digabung ke NASA Rocket. Perubahan nama halaman Artemis menjadi NASA Rocket.
+        </div>
+      </div>
+
+      <div class="changelog-item">
+        <div class="changelog-ver">v1.2.0</div>
+        <div class="changelog-desc">
+          <strong>Statistik Sidebar & About Page</strong>
+          Statistik pengunjung, total BP, dan total download dipindahkan ke sidebar. Tambah halaman About. Tombol BP yang belum ada linknya otomatis disabled. Tambah label "By ???".
+        </div>
+      </div>
+
+      <div class="changelog-item">
+        <div class="changelog-ver">v1.1.0</div>
+        <div class="changelog-desc">
+          <strong>Lightbox & Preview Gambar</strong>
+          Klik foto di card untuk melihat preview full screen dengan animasi smooth.
+        </div>
+      </div>
+
+      <div class="changelog-item">
+        <div class="changelog-ver">v1.0.0</div>
+        <div class="changelog-desc">
+          <strong>Rilis Pertama</strong>
+          Website dasar dengan 5 kategori, counter pengunjung, counter download, animasi bintang, dan hamburger menu.
+        </div>
+      </div>
+    </div>
+
+    <!-- CREDIT -->
+    <div class="about-credit fade-in-4">
+      <h3>Kredit & Kontributor</h3>
+      <p>
+        Website ini dibuat untuk komunitas SFS Indonesia.<br>
+        Blueprint dikontribusikan oleh anggota komunitas.<br><br>
+        Sekarang kamu bisa langsung upload blueprint kamu sendiri!<br>
+        <strong style="color:var(--text-primary);">Register → Upload → Tampil di website 🚀</strong><br><br>
+        <span style="color:var(--text-muted);font-size:12px;">
+          ⚠️ Semua blueprint adalah milik pembuatnya masing-masing.<br>
+          Website ini hanya sebagai platform distribusi gratis.
+        </span>
+      </p>
+    </div>
+  </div>
+</main>
+<footer><p>Made with 🚀 for <span>Space Flight Simulator</span> community</p></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../assets/js/supabase.js"></script>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
