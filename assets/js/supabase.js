@@ -6,9 +6,9 @@ const SUPABASE_URL      = 'https://mrubbgfthrxeveahvrsu.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_H-zZj7xLPNmF6NLRywYJxQ_71j5KdmQ';
 
 // Email owner — ganti dengan email kamu
-const OWNER_EMAIL = 'GANTI_EMAIL_OWNER_KAMU@gmail.com';
+const OWNER_EMAIL = 'vanzzcode@gmail.com';
 // Password verifikasi panel admin/owner (beda dari password login)
-const ADMIN_VERIFY_PASSWORD = 'GANTI_ADMIN_PASSWORD_RAHASIA';
+const ADMIN_VERIFY_PASSWORD = 'VanzzAkses895';
 // Storage bucket name
 const BUCKET = 'blueprint-images';
 
