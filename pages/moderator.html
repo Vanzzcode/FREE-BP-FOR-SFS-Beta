@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Panel Moderator — Free BP SFS</title>
+  <link rel="stylesheet" href="../assets/css/style.css"/>
+  <link rel="stylesheet" href="../assets/css/additions.css"/>
+  <link rel="stylesheet" href="../assets/css/admin.css"/>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<header>
+  <div class="header-left"><div class="header-icon">🔨</div><span class="page-title">PANEL MODERATOR</span></div>
+  <div class="header-right"><div class="hamburger" id="hamburger"><span></span><span></span><span></span></div></div>
+</header>
+<div id="sidebarOverlay" class="sidebar-overlay"></div>
+<nav id="sidebar" class="sidebar">
+  <div class="sidebar-header"><p>Navigation</p></div>
+  <ul class="nav-list">
+    <li><a href="../index.html"><span class="nav-icon">🏠</span> Halaman Utama</a></li>
+    <li><a href="NASA.html"><span class="nav-icon">🚀</span> NASA Rocket</a></li>
+    <li><a href="spacex.html"><span class="nav-icon">⚡</span> SpaceX Rocket</a></li>
+    <li><a href="satelit.html"><span class="nav-icon">🛰️</span> Satelit</a></li>
+    <li><a href="random.html"><span class="nav-icon">🎲</span> Random</a></li>
+    <li><a href="leaderboard.html"><span class="nav-icon">🏆</span> Leaderboard</a></li>
+    <li><a href="about.html"><span class="nav-icon">ℹ️</span> About</a></li>
+  </ul>
+  <div class="sidebar-divider"></div>
+  <ul class="nav-list nav-auth-area"></ul>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section-label">📊 Statistik</div>
+  <div class="stats-block">
+    <div class="stat-item"><div class="stat-dot"></div><div class="stat-info"><span class="stat-label">Pengunjung</span><span class="stat-value" id="statVisitors">0</span></div></div>
+    <div class="stat-item"><div class="stat-icon">🗂️</div><div class="stat-info"><span class="stat-label">Total Blueprint</span><span class="stat-value" id="statTotalBP">0</span></div></div>
+    <div class="stat-item"><div class="stat-icon">📥</div><div class="stat-info"><span class="stat-label">Total Download</span><span class="stat-value" id="statTotalDownloads">0</span></div></div>
+  </div>
+</nav>
+
+<main>
+  <div class="container panel-container">
+    <div class="panel-header">
+      <h1>🔨 Panel Moderator <span class="role-badge role-moderator">MOD</span></h1>
+      <p>Kelola laporan dan peringatan user.</p>
+    </div>
+
+    <div class="panel-msg" id="modMsg"></div>
+
+    <!-- STATS -->
+    <div class="panel-stats">
+      <div class="panel-stat-card"><div class="val" id="statPendingReports">0</div><div class="lbl">Laporan Pending</div></div>
+      <div class="panel-stat-card"><div class="val" id="statActioned">—</div><div class="lbl">Total Ditindak</div></div>
+    </div>
+
+    <!-- LAPORAN -->
+    <div class="panel-section">
+      <div class="panel-section-title">
+        🚩 ANTRIAN LAPORAN
+        <button class="btn-sm btn-ghost" onclick="loadPendingReports()" style="font-size:11px;">🔄 Refresh</button>
+      </div>
+      <div id="reportsList"><p class="text-muted">Memuat laporan...</p></div>
+    </div>
+
+    <!-- LOG AKSI SAYA -->
+    <div class="panel-section">
+      <div class="panel-section-title">📜 LOG AKSI SAYA</div>
+      <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:0 16px;" id="modLogList"></div>
+    </div>
+  </div>
+</main>
+
+<!-- MODAL: BERI PERINGATAN -->
+<div class="modal-overlay mod" id="warnModal">
+  <div class="modal-box mod">
+    <div class="modal-title" style="color:#a78bfa;">⚠️ Beri Peringatan</div>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">User akan mendapat notifikasi peringatan. 3x peringatan = banned otomatis.</p>
+    <label class="form-label">Alasan Peringatan <span style="color:#ef4444;">*</span></label>
+    <textarea class="form-input" id="warnReasonInput" rows="3" placeholder="Tulis alasan..." style="resize:vertical;"></textarea>
+    <div class="modal-error" id="warnModalError"></div>
+    <div class="modal-footer">
+      <button class="btn-sm btn-ghost" onclick="closeWarnModal()">Batal</button>
+      <button class="btn-sm btn-mod" id="btnConfirmWarn">⚠️ Kirim Peringatan</button>
+    </div>
+  </div>
+</div>
+
+<footer><p>Made with 🚀 for <span>Space Flight Simulator</span> community</p></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../assets/js/supabase.js"></script>
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/admin.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const profile = await window.SFS.getCurrentProfile();
+    if (!profile || !['moderator','admin','owner'].includes(profile.role)) {
+      window.location.href = '../index.html'; return;
+    }
+    await initModeratorPanel();
+  });
+</script>
+</body>
+</html>
